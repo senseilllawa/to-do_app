@@ -1,0 +1,51 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: todo-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: todoapp
+    volumes:
+      - todo-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d todoapp"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: todo-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=todoapp;Username=postgres;Password=postgres"
+      Jwt__Key: "ThisIsAVeryLongSecretKeyForJwtTokenGenerationPleaseChangeInProduction_32+chars"
+      Jwt__Issuer: "TodoApp.Api"
+      Jwt__Audience: "TodoApp.Client"
+      Jwt__ExpiresHours: "24"
+      Cors__Origins__0: "http://localhost:4200"
+      Cors__Origins__1: "http://localhost"
+    ports:
+      - "5000:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: todo-frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+
+volumes:
+  todo-db-data:
