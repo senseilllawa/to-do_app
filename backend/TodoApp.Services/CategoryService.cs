@@ -56,7 +56,7 @@ public class CategoryService : ICategoryService
         return true;
     }
 
-    internal static CategoryDto ToDto(Category c) => new()
+    private static CategoryDto ToDto(Category c) => new()
     {
         Id = c.Id,
         Name = c.Name,

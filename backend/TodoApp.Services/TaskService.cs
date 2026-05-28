@@ -88,7 +88,7 @@ public class TaskService : ITaskService
             throw new InvalidOperationException("Category not found or doesn't belong to user.");
     }
 
-    internal static TaskDto ToDto(TaskItem t) => new()
+    private static TaskDto ToDto(TaskItem t) => new()
     {
         Id = t.Id,
         Title = t.Title,

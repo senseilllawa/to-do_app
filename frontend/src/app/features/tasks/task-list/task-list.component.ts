@@ -48,7 +48,7 @@ import { debounceTime, Subject } from 'rxjs';
 
       @if (loading()) {
         <div class="text-center py-8 text-slate-500">Loading...</div>
-      } @else if (result() !== null) {
+      } @else {
         @if (result(); as r) {
           @if (r.items.length === 0) {
             <div class="card p-8 text-center text-slate-500">No tasks found.</div>
@@ -95,7 +95,6 @@ import { debounceTime, Subject } from 'rxjs';
               </div>
             </div>
           }
-        }
       }
 
       @if (formOpen()) {
