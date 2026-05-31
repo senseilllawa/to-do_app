@@ -26,7 +26,7 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateToken_ReturnsValidJwtWithExpectedClaims()
+    public void ГенераціяТокену_ПовертаєВалідніClaimsJWT()
     {
         var user = new User { Id = 123, Email = "test@user.com", UserName = "tester" };
 
@@ -44,7 +44,7 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void GenerateToken_ExpiresInConfiguredHours()
+    public void ГенераціяТокену_СпливаєЗаНалаштованийЧас()
     {
         var user = new User { Id = 1, Email = "x@x.com", UserName = "x" };
 

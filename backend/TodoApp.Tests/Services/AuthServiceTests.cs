@@ -22,7 +22,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task RegisterAsync_NewEmail_ReturnsTokenAndUser()
+    public async Task Реєстрація_НовийEmail_ПовертаєТокенТаКористувача()
     {
         var dto = new RegisterDto { Email = "new@user.com", UserName = "user", Password = "pass1234" };
         _users.Setup(r => r.EmailExistsAsync(dto.Email)).ReturnsAsync(false);
@@ -39,7 +39,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task RegisterAsync_ExistingEmail_Throws()
+    public async Task Реєстрація_ЗайнятийEmail_КидаєВиняток()
     {
         var dto = new RegisterDto { Email = "taken@user.com", UserName = "u", Password = "pass1234" };
         _users.Setup(r => r.EmailExistsAsync(dto.Email)).ReturnsAsync(true);
@@ -47,11 +47,11 @@ public class AuthServiceTests
         var act = () => _sut.RegisterAsync(dto);
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-                 .WithMessage("*already exists*");
+                 .WithMessage("*вже існує*");
     }
 
     [Fact]
-    public async Task LoginAsync_ValidCredentials_ReturnsToken()
+    public async Task Вхід_ПравильніДані_ПовертаєТокен()
     {
         var password = "secret123";
         var user = new User
@@ -70,7 +70,7 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_UserNotFound_ThrowsUnauthorized()
+    public async Task Вхід_КористувачаНеЗнайдено_КидаєВинятокБезДозволу()
     {
         _users.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
 
@@ -80,16 +80,16 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task LoginAsync_WrongPassword_ThrowsUnauthorized()
+    public async Task Вхід_НевірнийПароль_КидаєВинятокБезДозволу()
     {
         var user = new User
         {
             Email = "u@u.com",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("rightpassword")
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("правильнийпароль")
         };
         _users.Setup(r => r.GetByEmailAsync("u@u.com")).ReturnsAsync(user);
 
-        var act = () => _sut.LoginAsync(new LoginDto { Email = "u@u.com", Password = "wrongpassword" });
+        var act = () => _sut.LoginAsync(new LoginDto { Email = "u@u.com", Password = "невірнийпароль" });
 
         await act.Should().ThrowAsync<UnauthorizedAccessException>();
     }

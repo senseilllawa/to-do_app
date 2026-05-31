@@ -21,13 +21,13 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task GetAllAsync_ReturnsMappedCategoriesWithTasksCount()
+    public async Task ОтриматиВсі_ПовертаєКатегоріїЗКількістюЗавдань()
     {
         var cats = new[]
         {
-            new Category { Id = 1, Name = "Work", Color = "#000", UserId = UserId,
+            new Category { Id = 1, Name = "Робота", Color = "#000", UserId = UserId,
                            Tasks = new List<TaskItem> { new(), new(), new() } },
-            new Category { Id = 2, Name = "Home", Color = "#fff", UserId = UserId, Tasks = new List<TaskItem>() }
+            new Category { Id = 2, Name = "Дім", Color = "#fff", UserId = UserId, Tasks = new List<TaskItem>() }
         };
         _repo.Setup(r => r.GetAllAsync(UserId)).ReturnsAsync(cats);
 
@@ -39,21 +39,21 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_SavesAndReturnsDto()
+    public async Task Створити_ЗберігаєТаПовертаєDto()
     {
-        var dto = new CreateCategoryDto { Name = "Books", Color = "#abcdef" };
+        var dto = new CreateCategoryDto { Name = "Книги", Color = "#abcdef" };
         _repo.Setup(r => r.AddAsync(It.IsAny<Category>()))
              .ReturnsAsync((Category c) => { c.Id = 1; return c; });
 
         var result = await _sut.CreateAsync(UserId, dto);
 
         result.Id.Should().Be(1);
-        result.Name.Should().Be("Books");
+        result.Name.Should().Be("Книги");
         result.Color.Should().Be("#abcdef");
     }
 
     [Fact]
-    public async Task UpdateAsync_NotFound_ReturnsNull()
+    public async Task Оновити_НеЗнайдено_ПовертаєNull()
     {
         _repo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((Category?)null);
 
@@ -63,20 +63,20 @@ public class CategoryServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_Found_UpdatesFields()
+    public async Task Оновити_Знайдено_ОновлюєПоля()
     {
-        var existing = new Category { Id = 1, UserId = UserId, Name = "Old", Color = "#111111" };
+        var existing = new Category { Id = 1, UserId = UserId, Name = "Старе", Color = "#111111" };
         _repo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync(existing);
 
-        var result = await _sut.UpdateAsync(1, UserId, new UpdateCategoryDto { Name = "New", Color = "#222222" });
+        var result = await _sut.UpdateAsync(1, UserId, new UpdateCategoryDto { Name = "Нове", Color = "#222222" });
 
-        result!.Name.Should().Be("New");
+        result!.Name.Should().Be("Нове");
         result.Color.Should().Be("#222222");
         _repo.Verify(r => r.UpdateAsync(existing), Times.Once);
     }
 
     [Fact]
-    public async Task DeleteAsync_Found_ReturnsTrue()
+    public async Task Видалити_Знайдено_ПовертаєTrue()
     {
         var existing = new Category { Id = 1, UserId = UserId };
         _repo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync(existing);

@@ -85,7 +85,7 @@ public class TaskService : ITaskService
     private async Task ValidateCategoryAsync(int? categoryId, int userId)
     {
         if (categoryId.HasValue && !await _categories.ExistsForUserAsync(categoryId.Value, userId))
-            throw new InvalidOperationException("Category not found or doesn't belong to user.");
+            throw new InvalidOperationException("Категорія не знайдена або не належить користувачу.");
     }
 
     private static TaskDto ToDto(TaskItem t) => new()

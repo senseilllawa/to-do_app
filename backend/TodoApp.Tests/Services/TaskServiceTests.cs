@@ -22,7 +22,7 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task GetTasksAsync_NormalizesPageAndPageSize()
+    public async Task ОтриматиЗавдання_НормалізуєСторінкуТаРозмір()
     {
         _taskRepo.Setup(r => r.GetPagedAsync(UserId, It.IsAny<TaskQueryParams>()))
                  .ReturnsAsync((Enumerable.Empty<TaskItem>(), 0));
@@ -34,13 +34,13 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task GetTasksAsync_MapsItems()
+    public async Task ОтриматиЗавдання_МапуєЕлементи()
     {
         var items = new[]
         {
-            new TaskItem { Id = 1, Title = "A", UserId = UserId },
-            new TaskItem { Id = 2, Title = "B", UserId = UserId,
-                           Category = new Category { Id = 9, Name = "Cat", Color = "#fff" } }
+            new TaskItem { Id = 1, Title = "А", UserId = UserId },
+            new TaskItem { Id = 2, Title = "Б", UserId = UserId,
+                           Category = new Category { Id = 9, Name = "Кат", Color = "#fff" } }
         };
         _taskRepo.Setup(r => r.GetPagedAsync(UserId, It.IsAny<TaskQueryParams>()))
                  .ReturnsAsync((items, 2));
@@ -49,29 +49,29 @@ public class TaskServiceTests
 
         result.TotalItems.Should().Be(2);
         result.Items.Should().HaveCount(2);
-        result.Items.Last().CategoryName.Should().Be("Cat");
+        result.Items.Last().CategoryName.Should().Be("Кат");
         result.Items.Last().CategoryColor.Should().Be("#fff");
     }
 
     [Fact]
-    public async Task CreateAsync_NoCategory_Succeeds()
+    public async Task Створити_БезКатегорії_Успішно()
     {
-        var dto = new CreateTaskDto { Title = "New", Priority = TaskPriority.High };
+        var dto = new CreateTaskDto { Title = "Нове завдання", Priority = TaskPriority.High };
         _taskRepo.Setup(r => r.AddAsync(It.IsAny<TaskItem>()))
                  .ReturnsAsync((TaskItem t) => { t.Id = 10; return t; });
 
         var result = await _sut.CreateAsync(UserId, dto);
 
         result.Id.Should().Be(10);
-        result.Title.Should().Be("New");
+        result.Title.Should().Be("Нове завдання");
         result.Priority.Should().Be(TaskPriority.High);
         _catRepo.Verify(r => r.ExistsForUserAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
-    public async Task CreateAsync_CategoryBelongsToUser_Succeeds()
+    public async Task Створити_КатегоріяНалежитьКористувачу_Успішно()
     {
-        var dto = new CreateTaskDto { Title = "T", CategoryId = 5 };
+        var dto = new CreateTaskDto { Title = "Завдання", CategoryId = 5 };
         _catRepo.Setup(r => r.ExistsForUserAsync(5, UserId)).ReturnsAsync(true);
         _taskRepo.Setup(r => r.AddAsync(It.IsAny<TaskItem>()))
                  .ReturnsAsync((TaskItem t) => { t.Id = 1; return t; });
@@ -83,9 +83,9 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task CreateAsync_CategoryDoesNotBelongToUser_Throws()
+    public async Task Створити_КатегоріяНеНалежитьКористувачу_КидаєВиняток()
     {
-        var dto = new CreateTaskDto { Title = "T", CategoryId = 99 };
+        var dto = new CreateTaskDto { Title = "Завдання", CategoryId = 99 };
         _catRepo.Setup(r => r.ExistsForUserAsync(99, UserId)).ReturnsAsync(false);
 
         var act = () => _sut.CreateAsync(UserId, dto);
@@ -95,7 +95,7 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_TaskNotFound_ReturnsNull()
+    public async Task Оновити_ЗавданняНеЗнайдено_ПовертаєNull()
     {
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((TaskItem?)null);
 
@@ -105,15 +105,15 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task UpdateAsync_TaskExists_UpdatesFields()
+    public async Task Оновити_ЗавданняІснує_ОновлюєПоля()
     {
-        var existing = new TaskItem { Id = 1, UserId = UserId, Title = "Old" };
+        var existing = new TaskItem { Id = 1, UserId = UserId, Title = "Старе" };
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync(existing);
 
         var dto = new UpdateTaskDto
         {
-            Title = "New",
-            Description = "Desc",
+            Title = "Нове",
+            Description = "Опис",
             IsCompleted = true,
             Priority = TaskPriority.High
         };
@@ -121,13 +121,13 @@ public class TaskServiceTests
         var result = await _sut.UpdateAsync(1, UserId, dto);
 
         result.Should().NotBeNull();
-        result!.Title.Should().Be("New");
+        result!.Title.Should().Be("Нове");
         result.IsCompleted.Should().BeTrue();
         _taskRepo.Verify(r => r.UpdateAsync(It.IsAny<TaskItem>()), Times.Once);
     }
 
     [Fact]
-    public async Task DeleteAsync_TaskExists_ReturnsTrue()
+    public async Task Видалити_ЗавданняІснує_ПовертаєTrue()
     {
         var task = new TaskItem { Id = 1, UserId = UserId };
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync(task);
@@ -139,7 +139,7 @@ public class TaskServiceTests
     }
 
     [Fact]
-    public async Task DeleteAsync_TaskMissing_ReturnsFalse()
+    public async Task Видалити_ЗавданняВідсутнє_ПовертаєFalse()
     {
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((TaskItem?)null);
 

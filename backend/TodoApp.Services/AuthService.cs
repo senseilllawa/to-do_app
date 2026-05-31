@@ -18,7 +18,7 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
         if (await _users.EmailExistsAsync(dto.Email))
-            throw new InvalidOperationException("User with this email already exists.");
+            throw new InvalidOperationException("Користувач з таким email вже існує.");
 
         var user = new User
         {
@@ -34,10 +34,10 @@ public class AuthService : IAuthService
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
         var user = await _users.GetByEmailAsync(dto.Email)
-            ?? throw new UnauthorizedAccessException("Invalid email or password.");
+            ?? throw new UnauthorizedAccessException("Невірний email або пароль.");
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            throw new UnauthorizedAccessException("Invalid email or password.");
+            throw new UnauthorizedAccessException("Невірний email або пароль.");
 
         return BuildResponse(user);
     }

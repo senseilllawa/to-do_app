@@ -26,19 +26,19 @@ public class TaskRepositoryTests
         db.Users.AddRange(u1, u2);
         await db.SaveChangesAsync();
 
-        var cat = new Category { Name = "Work", Color = "#000", UserId = u1.Id };
+        var cat = new Category { Name = "Робота", Color = "#000", UserId = u1.Id };
         db.Categories.Add(cat);
         await db.SaveChangesAsync();
 
         var tasks = new[]
         {
-            new TaskItem { Title = "Buy milk", Description = "2L", UserId = u1.Id, CategoryId = cat.Id,
+            new TaskItem { Title = "Купити молоко", Description = "2л", UserId = u1.Id, CategoryId = cat.Id,
                            Priority = TaskPriority.High, IsCompleted = false, CreatedAt = DateTime.UtcNow.AddDays(-1) },
-            new TaskItem { Title = "Read book", UserId = u1.Id,
+            new TaskItem { Title = "Прочитати книгу", UserId = u1.Id,
                            Priority = TaskPriority.Low, IsCompleted = true, CreatedAt = DateTime.UtcNow.AddDays(-2) },
-            new TaskItem { Title = "Code review", Description = "Review milk PR", UserId = u1.Id,
+            new TaskItem { Title = "Перевірити код", Description = "Переглянути молоко PR", UserId = u1.Id,
                            Priority = TaskPriority.Medium, IsCompleted = false, CreatedAt = DateTime.UtcNow },
-            new TaskItem { Title = "Other user task", UserId = u2.Id, Priority = TaskPriority.Low }
+            new TaskItem { Title = "Завдання іншого користувача", UserId = u2.Id, Priority = TaskPriority.Low }
         };
         db.Tasks.AddRange(tasks);
         await db.SaveChangesAsync();
@@ -47,7 +47,7 @@ public class TaskRepositoryTests
     }
 
     [Fact]
-    public async Task GetPagedAsync_ReturnsOnlyUserTasks()
+    public async Task ОтриматиСторінку_ПовертаєТількиЗавданняКористувача()
     {
         var (db, userId, _, _) = await SeedAsync();
         var repo = new TaskRepository(db);
@@ -59,19 +59,19 @@ public class TaskRepositoryTests
     }
 
     [Fact]
-    public async Task GetPagedAsync_FilterBySearch_FindsByTitleAndDescription()
+    public async Task ОтриматиСторінку_ФільтрПошуку_ЗнаходитьЗаНазвоюТаОписом()
     {
         var (db, userId, _, _) = await SeedAsync();
         var repo = new TaskRepository(db);
 
-        var (items, total) = await repo.GetPagedAsync(userId, new TaskQueryParams { Search = "milk" });
+        var (items, total) = await repo.GetPagedAsync(userId, new TaskQueryParams { Search = "молоко" });
 
-        total.Should().Be(2); // "Buy milk" + "Review milk PR"
+        total.Should().Be(2); // "Купити молоко" + "Переглянути молоко PR"
         items.Should().HaveCount(2);
     }
 
     [Fact]
-    public async Task GetPagedAsync_FilterByCategory_ReturnsOnlyMatching()
+    public async Task ОтриматиСторінку_ФільтрКатегорії_ПовертаєВідповідні()
     {
         var (db, userId, _, catId) = await SeedAsync();
         var repo = new TaskRepository(db);
@@ -79,11 +79,11 @@ public class TaskRepositoryTests
         var (items, total) = await repo.GetPagedAsync(userId, new TaskQueryParams { CategoryId = catId });
 
         total.Should().Be(1);
-        items.Single().Title.Should().Be("Buy milk");
+        items.Single().Title.Should().Be("Купити молоко");
     }
 
     [Fact]
-    public async Task GetPagedAsync_FilterByCompleted_ReturnsOnlyCompleted()
+    public async Task ОтриматиСторінку_ФільтрВиконаних_ПовертаєВиконані()
     {
         var (db, userId, _, _) = await SeedAsync();
         var repo = new TaskRepository(db);
@@ -91,11 +91,11 @@ public class TaskRepositoryTests
         var (items, total) = await repo.GetPagedAsync(userId, new TaskQueryParams { IsCompleted = true });
 
         total.Should().Be(1);
-        items.Single().Title.Should().Be("Read book");
+        items.Single().Title.Should().Be("Прочитати книгу");
     }
 
     [Fact]
-    public async Task GetPagedAsync_Pagination_RespectsPageSize()
+    public async Task ОтриматиСторінку_Пагінація_РозбиваєНаСторінки()
     {
         var (db, userId, _, _) = await SeedAsync();
         var repo = new TaskRepository(db);
@@ -109,7 +109,7 @@ public class TaskRepositoryTests
     }
 
     [Fact]
-    public async Task GetByIdAsync_OtherUsersTask_ReturnsNull()
+    public async Task ОтриматиЗаId_ЗавданняІншогоКористувача_ПовертаєNull()
     {
         var (db, userId, otherId, _) = await SeedAsync();
         var repo = new TaskRepository(db);
@@ -121,12 +121,12 @@ public class TaskRepositoryTests
     }
 
     [Fact]
-    public async Task AddAsync_PersistsTask()
+    public async Task Додати_ЗберігаєЗавдання()
     {
         var (db, userId, _, _) = await SeedAsync();
         var repo = new TaskRepository(db);
 
-        var task = new TaskItem { Title = "New", UserId = userId, Priority = TaskPriority.Low };
+        var task = new TaskItem { Title = "Нове", UserId = userId, Priority = TaskPriority.Low };
         await repo.AddAsync(task);
 
         task.Id.Should().BeGreaterThan(0);
