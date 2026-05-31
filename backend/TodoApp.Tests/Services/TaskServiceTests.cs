@@ -21,7 +21,7 @@ public class TaskServiceTests
         _sut = new TaskService(_taskRepo.Object, _catRepo.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати завдання: нормалізує сторінку та розмір при некоректних значеннях")]
     public async Task ОтриматиЗавдання_НормалізуєСторінкуТаРозмір()
     {
         _taskRepo.Setup(r => r.GetPagedAsync(UserId, It.IsAny<TaskQueryParams>()))
@@ -33,7 +33,7 @@ public class TaskServiceTests
         result.PageSize.Should().Be(100);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати завдання: правильно мапує елементи разом з категорією")]
     public async Task ОтриматиЗавдання_МапуєЕлементи()
     {
         var items = new[]
@@ -53,7 +53,7 @@ public class TaskServiceTests
         result.Items.Last().CategoryColor.Should().Be("#fff");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Створити: без категорії → успішно створює завдання")]
     public async Task Створити_БезКатегорії_Успішно()
     {
         var dto = new CreateTaskDto { Title = "Нове завдання", Priority = TaskPriority.High };
@@ -68,7 +68,7 @@ public class TaskServiceTests
         _catRepo.Verify(r => r.ExistsForUserAsync(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Створити: категорія належить користувачу → успішно")]
     public async Task Створити_КатегоріяНалежитьКористувачу_Успішно()
     {
         var dto = new CreateTaskDto { Title = "Завдання", CategoryId = 5 };
@@ -82,7 +82,7 @@ public class TaskServiceTests
         _catRepo.Verify(r => r.ExistsForUserAsync(5, UserId), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Створити: чужа категорія → кидає виняток")]
     public async Task Створити_КатегоріяНеНалежитьКористувачу_КидаєВиняток()
     {
         var dto = new CreateTaskDto { Title = "Завдання", CategoryId = 99 };
@@ -94,7 +94,7 @@ public class TaskServiceTests
         _taskRepo.Verify(r => r.AddAsync(It.IsAny<TaskItem>()), Times.Never);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Оновити: завдання не знайдено → повертає null")]
     public async Task Оновити_ЗавданняНеЗнайдено_ПовертаєNull()
     {
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((TaskItem?)null);
@@ -104,7 +104,7 @@ public class TaskServiceTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Оновити: завдання існує → оновлює поля")]
     public async Task Оновити_ЗавданняІснує_ОновлюєПоля()
     {
         var existing = new TaskItem { Id = 1, UserId = UserId, Title = "Старе" };
@@ -126,7 +126,7 @@ public class TaskServiceTests
         _taskRepo.Verify(r => r.UpdateAsync(It.IsAny<TaskItem>()), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Видалити: завдання існує → повертає true")]
     public async Task Видалити_ЗавданняІснує_ПовертаєTrue()
     {
         var task = new TaskItem { Id = 1, UserId = UserId };
@@ -138,7 +138,7 @@ public class TaskServiceTests
         _taskRepo.Verify(r => r.DeleteAsync(task), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Видалити: завдання відсутнє → повертає false")]
     public async Task Видалити_ЗавданняВідсутнє_ПовертаєFalse()
     {
         _taskRepo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((TaskItem?)null);

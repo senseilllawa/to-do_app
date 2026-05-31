@@ -25,7 +25,7 @@ public class TokenServiceTests
         _sut = new TokenService(config);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Генерація токену: повертає валідний JWT з очікуваними claims")]
     public void ГенераціяТокену_ПовертаєВалідніClaimsJWT()
     {
         var user = new User { Id = 123, Email = "test@user.com", UserName = "tester" };
@@ -43,7 +43,7 @@ public class TokenServiceTests
         jwt.Claims.Should().Contain(c => c.Type == "userName" && c.Value == "tester");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Генерація токену: спливає за налаштований час")]
     public void ГенераціяТокену_СпливаєЗаНалаштованийЧас()
     {
         var user = new User { Id = 1, Email = "x@x.com", UserName = "x" };

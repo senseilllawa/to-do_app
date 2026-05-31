@@ -46,7 +46,7 @@ public class TaskRepositoryTests
         return (db, u1.Id, u2.Id, cat.Id);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати сторінку: повертає тільки завдання поточного користувача")]
     public async Task ОтриматиСторінку_ПовертаєТількиЗавданняКористувача()
     {
         var (db, userId, _, _) = await SeedAsync();
@@ -58,7 +58,7 @@ public class TaskRepositoryTests
         items.Should().OnlyContain(t => t.UserId == userId);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати сторінку: пошук знаходить за назвою та описом")]
     public async Task ОтриматиСторінку_ФільтрПошуку_ЗнаходитьЗаНазвоюТаОписом()
     {
         var (db, userId, _, _) = await SeedAsync();
@@ -70,7 +70,7 @@ public class TaskRepositoryTests
         items.Should().HaveCount(2);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати сторінку: фільтр за категорією повертає тільки відповідні")]
     public async Task ОтриматиСторінку_ФільтрКатегорії_ПовертаєВідповідні()
     {
         var (db, userId, _, catId) = await SeedAsync();
@@ -82,7 +82,7 @@ public class TaskRepositoryTests
         items.Single().Title.Should().Be("Купити молоко");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати сторінку: фільтр виконаних повертає тільки виконані")]
     public async Task ОтриматиСторінку_ФільтрВиконаних_ПовертаєВиконані()
     {
         var (db, userId, _, _) = await SeedAsync();
@@ -94,7 +94,7 @@ public class TaskRepositoryTests
         items.Single().Title.Should().Be("Прочитати книгу");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати сторінку: пагінація розбиває результати на сторінки")]
     public async Task ОтриматиСторінку_Пагінація_РозбиваєНаСторінки()
     {
         var (db, userId, _, _) = await SeedAsync();
@@ -108,7 +108,7 @@ public class TaskRepositoryTests
         page2.Should().HaveCount(1);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати за id: завдання іншого користувача → повертає null")]
     public async Task ОтриматиЗаId_ЗавданняІншогоКористувача_ПовертаєNull()
     {
         var (db, userId, otherId, _) = await SeedAsync();
@@ -120,7 +120,7 @@ public class TaskRepositoryTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Додати: зберігає завдання та присвоює id")]
     public async Task Додати_ЗберігаєЗавдання()
     {
         var (db, userId, _, _) = await SeedAsync();

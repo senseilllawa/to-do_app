@@ -20,7 +20,7 @@ public class CategoryServiceTests
         _sut = new CategoryService(_repo.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Отримати всі: повертає категорії з кількістю завдань")]
     public async Task ОтриматиВсі_ПовертаєКатегоріїЗКількістюЗавдань()
     {
         var cats = new[]
@@ -38,7 +38,7 @@ public class CategoryServiceTests
         result[1].TasksCount.Should().Be(0);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Створити: зберігає та повертає DTO з правильними полями")]
     public async Task Створити_ЗберігаєТаПовертаєDto()
     {
         var dto = new CreateCategoryDto { Name = "Книги", Color = "#abcdef" };
@@ -52,7 +52,7 @@ public class CategoryServiceTests
         result.Color.Should().Be("#abcdef");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Оновити: категорію не знайдено → повертає null")]
     public async Task Оновити_НеЗнайдено_ПовертаєNull()
     {
         _repo.Setup(r => r.GetByIdAsync(1, UserId)).ReturnsAsync((Category?)null);
@@ -62,7 +62,7 @@ public class CategoryServiceTests
         result.Should().BeNull();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Оновити: категорію знайдено → оновлює назву та колір")]
     public async Task Оновити_Знайдено_ОновлюєПоля()
     {
         var existing = new Category { Id = 1, UserId = UserId, Name = "Старе", Color = "#111111" };
@@ -75,7 +75,7 @@ public class CategoryServiceTests
         _repo.Verify(r => r.UpdateAsync(existing), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Видалити: категорію знайдено → повертає true")]
     public async Task Видалити_Знайдено_ПовертаєTrue()
     {
         var existing = new Category { Id = 1, UserId = UserId };

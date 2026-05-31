@@ -21,7 +21,7 @@ public class AuthServiceTests
         _sut = new AuthService(_users.Object, _tokens.Object);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Реєстрація: новий email → повертає токен та користувача")]
     public async Task Реєстрація_НовийEmail_ПовертаєТокенТаКористувача()
     {
         var dto = new RegisterDto { Email = "new@user.com", UserName = "user", Password = "pass1234" };
@@ -38,7 +38,7 @@ public class AuthServiceTests
             u.Email == "new@user.com" && u.PasswordHash != "pass1234")), Times.Once);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Реєстрація: зайнятий email → кидає виняток")]
     public async Task Реєстрація_ЗайнятийEmail_КидаєВиняток()
     {
         var dto = new RegisterDto { Email = "taken@user.com", UserName = "u", Password = "pass1234" };
@@ -50,7 +50,7 @@ public class AuthServiceTests
                  .WithMessage("*вже існує*");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Вхід: правильні дані → повертає токен")]
     public async Task Вхід_ПравильніДані_ПовертаєТокен()
     {
         var password = "secret123";
@@ -69,7 +69,7 @@ public class AuthServiceTests
         result.User.Id.Should().Be(5);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Вхід: користувача не знайдено → помилка авторизації")]
     public async Task Вхід_КористувачаНеЗнайдено_КидаєВинятокБезДозволу()
     {
         _users.Setup(r => r.GetByEmailAsync(It.IsAny<string>())).ReturnsAsync((User?)null);
@@ -79,7 +79,7 @@ public class AuthServiceTests
         await act.Should().ThrowAsync<UnauthorizedAccessException>();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Вхід: невірний пароль → помилка авторизації")]
     public async Task Вхід_НевірнийПароль_КидаєВинятокБезДозволу()
     {
         var user = new User
